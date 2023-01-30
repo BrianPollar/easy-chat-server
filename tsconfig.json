@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    // "baseUrl": "./",
+    // "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    // "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    // "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": true,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "outDir": "./lib",
+    "target": "es2020", /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+  },
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}
+//"got": "^11.8.3",
+//"@types/got": "^9.6.12",
