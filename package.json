@@ -28,7 +28,7 @@
   "scripts": {
     "build": "tsc",
     "test": "node ./__tests__/easy-chat.test.js",
-    "publish": "npm publish"
+    "publishGit": "npm publish"
   },
   "peerDependencies": {
     "socket.io": "^4.5.4",
