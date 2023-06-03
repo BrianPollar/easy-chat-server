@@ -7,7 +7,7 @@ import Onlinepeer from './defines/peer.define';
 import { IsocketConfig } from './interfaces/socket.interface';
 const logger = getLogger('WebsocketServer');
 
-export default class EasyChat {
+export class EasyChat {
   // general room on initial connect
   onlineRoom: Onlineroom;
   io: Server;
