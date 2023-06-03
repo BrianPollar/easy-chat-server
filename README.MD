@@ -26,16 +26,17 @@ All you need to do is call create a room, heck you not need to destroy a room as
 Sample code:
 
 ```ts
-import { EasyChat } from "easy-chat-server";
+import { EasyChat, IsocketConfig } from "easy-chat-server";
 const httpsServer; // your node server instance
 const roomStatusInterval = 1000; // logging update interval
-const socketConfig = {
+const socketConfig: IsocketConfig = {
   pingTimeout: 3000,
   pingInterval: 5000,
   transports: ["websocket"],
   allowUpgrades: false,
 };
 const easyChat = new EasyChat(httpsServer, roomStatusInterval, socketConfig);
+easyChat.run();
 ```
 
 ## Installation
@@ -53,17 +54,18 @@ yarn add easy-chat-server
 The following creates an instance of easyChat.
 
 ```ts
-import { EasyChat } from "easy-chat-server";
+import { EasyChat, IsocketConfig } from "easy-chat-server";
 const httpsServer; // your node server instance
 const roomStatusInterval = 1000; // logging update interval
 // the config properties can be optional
-const socketConfig = {
+const socketConfig: IsocketConfig = {
   pingTimeout: 3000,
   pingInterval: 5000,
   transports: ["websocket"],
   allowUpgrades: false,
 };
 const easyChat = new EasyChat(httpsServer, roomStatusInterval, socketConfig);
+easyChat.run();
 
 /**
  *  get data from event incase you
