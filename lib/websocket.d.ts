@@ -5,7 +5,7 @@ import * as https from 'https';
 import { Server } from 'socket.io';
 import Onlineroom from './defines/online-room.define';
 import { IsocketConfig } from './interfaces/socket.interface';
-export default class EasyChat {
+export declare class EasyChat {
     private httpsServer;
     private roomStatusInterval;
     private socketConfig;
