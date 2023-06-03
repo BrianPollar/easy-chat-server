@@ -1,6 +1,6 @@
 {
   "name": "easy-chat-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "easy socket chat library for node js applications",
   "author": "Brian Job Okello <63491479+BrianPollar@users.noreply.github.com>",
   "homepage": "",
