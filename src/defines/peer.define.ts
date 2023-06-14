@@ -21,6 +21,7 @@ export default class Onlinepeer
 
   /** peers joining time */
   enterTime = Date.now();
+  lastSeen = new Date();
 
   constructor(
     public id: string,
@@ -38,6 +39,7 @@ export default class Onlinepeer
   close() {
     logger.info('Onlinepeer:close:: - peer %s call close()', this.id);
     this.closed = true;
+    this.lastSeen = new Date();
     this.closeResource();
     if (this.socket) {
       this.socket.disconnect(true);
