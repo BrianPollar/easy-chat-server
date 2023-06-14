@@ -40,13 +40,17 @@ export class EasyChat {
    * This mostly handles media server rtc
    * connection operations
    */
-  run() {
+  run(allowedCorsOrigins: string[]) {
     this.io = new Server(this.httpsServer, {
     // io = socketio.listen(httpsServer, {
     /** cors: {
 			origin: 'http://localhost:8080',
 			methods: ['GET', 'POST']
 		},**/
+    cors: {
+      origin: [...allowedCorsOrigins],
+      methods: ['GET', 'POST']
+    },
       pingTimeout: this.socketConfig.pingTimeout || 3000,
       pingInterval: this.socketConfig.pingInterval || 5000,
       transports: this.socketConfig.transports || ['websocket'],

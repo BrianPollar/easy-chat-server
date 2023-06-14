@@ -18,6 +18,7 @@ export default class Onlinepeer extends EventEmitter {
     intervalHandler: any;
     /** peers joining time */
     enterTime: number;
+    lastSeen: Date;
     constructor(id: string, socket: Socket, room: Chatroom | Onlineroom);
     /** close peer object */
     close(): void;

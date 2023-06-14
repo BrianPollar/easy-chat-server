@@ -17,7 +17,7 @@ export declare class EasyChat {
      * This mostly handles media server rtc
      * connection operations
      */
-    run(): void;
+    run(allowedCorsOrigins: string[]): void;
     emitEvent(eventName: string, data: any): void;
     private handleMainConnection;
 }
