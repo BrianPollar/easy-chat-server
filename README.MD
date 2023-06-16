@@ -35,8 +35,11 @@ const socketConfig: IsocketConfig = {
   transports: ["websocket"],
   allowUpgrades: false,
 };
+
+const allowedOrigins = ["https://yourwhitelistapi.com"];
+
 const easyChat = new EasyChat(httpsServer, roomStatusInterval, socketConfig);
-easyChat.run();
+easyChat.run(allowedOrigins);
 ```
 
 ## Installation
@@ -54,7 +57,7 @@ yarn add easy-chat-server
 The following creates an instance of easyChat.
 
 ```ts
-import { EasyChat, IsocketConfig } from "easy-chat-server";
+import { EasyChat, IsocketConfig, IchatMsg } from "easy-chat-server";
 const httpsServer; // your node server instance
 const roomStatusInterval = 1000; // logging update interval
 // the config properties can be optional
@@ -68,22 +71,80 @@ const easyChat = new EasyChat(httpsServer, roomStatusInterval, socketConfig);
 easyChat.run();
 
 /**
- *  get data from event incase you
+ * get data from event incase you
  * you want to process it futher,say my be save
  * in database or file*/
-easyChat.onlineRoom.on("CHAT_MESSAGE", () => {
-  // do stuffs
+easyChat.onlineRoom.on("CHAT_MESSAGE", (message: IchatMsg) => {
+  // do stuffs with message here
 });
 
 // for full event list see enum ECHATMETHOD
 import { ECHATMETHOD } from "easy-chat-server";
 ```
 
+### Communication
+
+Communication between you and the server are established throught events
+Below are all events you can listen to;
+
+## Save Message
+
+```ts
+/**
+ * get data from event incase you
+ * you want to process it futher,say my be save
+ * in database or file*/
+easyChat.onlineRoom.on("CHAT_MESSAGE", (message: IchatMsg) => {
+  // do stuffs with message here
+});
+```
+
+## Delete Message
+
+```ts
+/**
+ * get delted message request and id of the message incase you want to remove from database*/
+easyChat.onlineRoom.on(
+  "DELETE_MESSAGE",
+  ({ deleted, id }: { deleted: IchatMsg; id: string }) => {
+    // do stuffs here
+  }
+);
+```
+
+## Update Room
+
+```ts
+/**
+ * get update room request*/
+import { Chatroom } from "easy-chat-server";
+easyChat.onlineRoom.on(
+  "UPDATE_ROOM",
+  ({ roomData }: { roomData: Chatroom }) => {
+    // do stuffs here
+  }
+);
+```
+
+## Update Peer Status
+
+```ts
+import { IpeerInfo } from "easy-chat-server";
+/**
+ * get update peer request*/
+easyChat.onlineRoom.on(
+  "PEER_UPDATE",
+  ({ peerInfo }: { peerInfo: IpeerInfo }) => {
+    // do stuffs here
+  }
+);
+```
+
 ### In conjunction with Express
 
 You need to pass the `Server` to `easy-chat`, and not the express application function. The rest of the listening is done automatically.
 
-```js
+```ts
 const app = require("express")();
 const httpsServer = require("http").createServer(app);
 const roomStatusInterval = 1000; // logging update interval
