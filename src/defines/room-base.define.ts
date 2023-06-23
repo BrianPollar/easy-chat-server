@@ -5,8 +5,15 @@ import { TroomEvent } from '../types/union.types';
 import Onlinepeer from './peer.define';
 import Chatroom from './chat-room.define';
 import { ECHATMETHOD } from '../enums/chat.enum';
+import { faker } from '@faker-js/faker';
 
 const logger = getLogger('RoomBase');
+
+export const createMockRoomBase = () => {
+  return {
+    id: faker.string.uuid()
+  };
+};
 
 export default abstract class RoomBase
   extends EventEmitter {

@@ -3,8 +3,18 @@ import { EventEmitter } from 'events';
 import { getLogger } from 'log4js';
 import Chatroom from './chat-room.define';
 import Onlineroom from './online-room.define';
+import { faker } from '@faker-js/faker';
 
 const logger = getLogger('Onlinepeer');
+
+export const createMockPeer = (socket: Socket, room: Chatroom | Onlineroom) => {
+  return new Onlinepeer(faker.string.uuid(), socket, room);
+};
+
+
+export const createMockPeers = (length: number, socket: Socket, room: Chatroom | Onlineroom) => {
+  return Array.from({ length }).map(() => createMockPeer(socket, room));
+};
 
 export default class Onlinepeer
   extends EventEmitter {

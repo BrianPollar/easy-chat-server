@@ -3,8 +3,17 @@ import { ECHATMETHOD } from '../enums/chat.enum';
 import Chatroom from './chat-room.define';
 import Onlinepeer from './peer.define';
 import RoomBase from './room-base.define';
+import { faker } from '@faker-js/faker';
 
 const logger = getLogger('ChatroomController');
+
+export const createMockOnlineroom = (roomStatusInterval: number) => {
+  return new Onlineroom(faker.string.uuid(), roomStatusInterval);
+};
+
+export const createMockOnlinerooms = (length: number, roomStatusInterval: number) => {
+  return Array.from({ length }).map(() => createMockOnlineroom(roomStatusInterval));
+};
 
 export default class Onlineroom
   extends RoomBase {
@@ -157,5 +166,5 @@ export default class Onlineroom
 
   callBacFn = (eventName: string, data) => {
     this.emit(eventName, data);
-  }
+  };
 }

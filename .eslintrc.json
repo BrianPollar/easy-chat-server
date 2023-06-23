@@ -3,6 +3,12 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+  "env": {
+    "es6": true
+  },
   "rules": {
     "func-name-matching": 0,
     "indent": [
@@ -18,7 +24,7 @@
     ],
     "max-params": [
       2,
-      22
+      12
     ],
     "max-statements": [
       2,
@@ -68,7 +74,7 @@
     ],
     //"new-cap": 2,
     "new-parens": 2,
-    "no-alert": 1,
+    "no-alert": 2,
     //new
     "no-caller": 2,
     "no-case-declarations": 2,
@@ -116,7 +122,7 @@
     "no-sequences": 2,
     "no-sparse-arrays": 2,
     "no-trailing-spaces": 2,
-    //"no-undefined": 2,
+    "no-undefined": 2,
     "no-unexpected-multiline": 2,
     "no-unneeded-ternary": 2,
     "no-unreachable": 2,
@@ -184,47 +190,16 @@
       ],
       "parserOptions": {
         "project": [
-          "tsconfig.json",
-          "e2e/tsconfig.json"
+          "tsconfig.json"
         ],
         "createDefaultProgram": true
       },
       "extends": [
-        "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates",
-        "plugin:@angular-eslint/ng-cli-compat",
-        "plugin:@angular-eslint/ng-cli-compat--formatting-add-on"
+        "plugin:@typescript-eslint/recommended"
       ],
       "rules": {
-        "@angular-eslint/component-class-suffix": [
-          "error",
-          {
-            "suffixes": [
-              "Page",
-              "Component",
-              "Base",
-              "Subbase"
-            ]
-          }
-        ],
-        "@angular-eslint/component-selector": [
-          "error",
-          {
-            "type": "element",
-            "prefix": "app",
-            "style": "kebab-case"
-          }
-        ],
-        "@angular-eslint/directive-selector": [
-          "error",
-          {
-            "type": "attribute",
-            "prefix": "app",
-            "style": "camelCase"
-          }
-        ],
-        "jsdoc/check-alignment": "warn",
-        "@typescript-eslint/no-this-alias": "warn",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/naming-convention": [
           "error",
           {
@@ -254,6 +229,13 @@
             "selector": "class",
             "format": [
               "StrictPascalCase"
+            ],
+            "suffix": [
+              /** "Controller", 
+              "Model",
+              "Service",
+              "Server",
+              "Base" */
             ],
             "leadingUnderscore": "forbid",
             "trailingUnderscore": "forbid"
@@ -298,7 +280,8 @@
             "leadingUnderscore": "forbid",
             "trailingUnderscore": "forbid",
             "prefix": [
-              "E"
+              "E",
+              "RTC_E"
             ]
           },
           {
@@ -318,7 +301,8 @@
             "leadingUnderscore": "forbid",
             "trailingUnderscore": "forbid",
             "prefix": [
-              "I"
+              "I",
+              "RTC_I"
             ]
           },
           {
@@ -333,9 +317,35 @@
             ]
           }
         ],
-        "@typescript-eslint/quotes": "error",
+        "@typescript-eslint/quotes": [
+          "error",
+          "single",
+          {
+            "allowTemplateLiterals": true
+          }
+        ],
+        "@typescript-eslint/member-delimiter-style": [
+          "error",
+          {
+            "multiline": {
+              "delimiter": "semi",
+              "requireLast": true
+            },
+            "singleline": {
+              "delimiter": "semi",
+              "requireLast": false
+            }
+          }
+        ],
+        "eol-last": "error",
         "no-underscore-dangle": "off",
+        "@typescript-eslint/semi": [
+          "error",
+          "always"
+        ],
+        "@typescript-eslint/type-annotation-spacing": "error",
         "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-implicit-any-catch": "off",
         "@typescript-eslint/no-misused-promises": "error",
         "@typescript-eslint/no-unused-expressions": "error",
         "@typescript-eslint/no-unused-vars": "warn",
@@ -353,8 +363,9 @@
         //"@typescript-eslint/no-unsafe-assignment" : "warn",
         //"@typescript-eslint/no-unsafe-call" : "warn",
         //"@typescript-eslint/no-unsafe-member-access" : "warn",
-        "@typescript-eslint/no-unsafe-return": "warn",
-        "@typescript-eslint/no-var-requires": "warn",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "object-shorthand": "error",
         "comma-dangle": "error",
         "no-console": [
           "warn",
@@ -385,15 +396,6 @@
           }
         ]
       }
-    },
-    {
-      "files": [
-        "*.html"
-      ],
-      "extends": [
-        "plugin:@angular-eslint/template/recommended"
-      ],
-      "rules": {}
     }
   ]
 }

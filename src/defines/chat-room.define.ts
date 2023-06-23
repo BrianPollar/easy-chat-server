@@ -5,6 +5,17 @@ import { ECHATMETHOD } from '../enums/chat.enum';
 import { IchatMsg } from '../interfaces/chat.interface';
 import Onlinepeer from './peer.define';
 import RoomBase from './room-base.define';
+import { faker } from '@faker-js/faker';
+
+export const createMockChatroom = (cb) => {
+  return new Chatroom(faker.string.uuid(), faker.internet.userName(), cb);
+};
+
+
+export const createMockChatrooms = (length: number, cb) => {
+  return Array.from({ length }).map(() => createMockChatroom(cb));
+};
+
 
 const logger = getLogger('Chatroom');
 
@@ -28,7 +39,7 @@ export default class Chatroom
     roomId: string,
     userId: string,
     cb: (...args) => void
-    ) {
+  ) {
     logger.info('Chatroom:create:: - create() [roomId:"%s"]', roomId);
 
     return new Chatroom(

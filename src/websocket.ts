@@ -47,10 +47,10 @@ export class EasyChat {
 			origin: 'http://localhost:8080',
 			methods: ['GET', 'POST']
 		},**/
-    cors: {
-      origin: [...allowedCorsOrigins],
-      methods: ['GET', 'POST']
-    },
+      cors: {
+        origin: [...allowedCorsOrigins],
+        methods: ['GET', 'POST']
+      },
       pingTimeout: this.socketConfig.pingTimeout || 3000,
       pingInterval: this.socketConfig.pingInterval || 5000,
       transports: this.socketConfig.transports || ['websocket'],
@@ -64,8 +64,8 @@ export class EasyChat {
     });
   }
 
-  emitEvent(eventName: string, data){
-    this.onlineRoom.emit(eventName, data)
+  emitEvent(eventName: string, data) {
+    this.onlineRoom.emit(eventName, data);
   }
 
   private handleMainConnection(socket: Socket) {
