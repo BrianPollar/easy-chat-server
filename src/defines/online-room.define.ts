@@ -1,6 +1,6 @@
 import { getLogger } from 'log4js';
 import { ECHATMETHOD } from '../enums/chat.enum';
-import Chatroom from './chat-room.define';
+import Chatroom, { InowhandleSocketRequestRes } from './chat-room.define';
 import Onlinepeer from './peer.define';
 import RoomBase from './room-base.define';
 import { faker } from '@faker-js/faker';
@@ -62,11 +62,17 @@ export default class Onlineroom
     peer: Onlinepeer,
     request,
     cb
-  ) {
+  ): Promise<InowhandleSocketRequestRes> {
+    const res: InowhandleSocketRequestRes = {
+      success: true,
+      err: '',
+      msg: ''
+    };
     switch (request.method as ECHATMETHOD) {
       case ECHATMETHOD.JOIN:
       {
         if (peer.joined) {
+          res.msg = 'JOINED_ALREADY';
           cb(null, { joined: true });
           break;
         }
@@ -78,6 +84,7 @@ export default class Onlineroom
           peerInfos.push(joinedPeer.peerInfo());
         });
 
+        res.msg = 'SUCCESS';
         cb(null, { peers: peerInfos, joined: false });
 
         this.nownotification(
@@ -99,6 +106,7 @@ export default class Onlineroom
       {
         logger.info('Onlineroom:nowhandleSocketRequest:: - CLOSE_PEER, main peer: %s', peer.id);
         peer.close();
+        res.msg = 'SUCCESS';
         cb();
         break;
       }
@@ -157,11 +165,12 @@ export default class Onlineroom
           }
         }
         this.nownotification(peer.socket, ECHATMETHOD.UPDATE_ROOMS_ON_NEW, request.data, true);
+        res.msg = 'SUCCESS';
         cb();
         break;
       }
     }
-    return new Promise(resolve => resolve(true));
+    return new Promise(resolve => resolve(res));
   }
 
   callBacFn = (eventName: string, data) => {

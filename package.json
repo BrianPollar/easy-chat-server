@@ -32,7 +32,6 @@
     "test:vite": "vitest"
   },
   "peerDependencies": {
-    "debug": "^4.3.4",
     "log4js": "^6.7.1",
     "socket.io": "^4.5.4"
   },
@@ -44,6 +43,11 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsdoc": "^39.6.9",
     "eslint-plugin-prefer-arrow": "^1.2.3",
+    "express": "^4.18.2",
+    "log4js": "^6.7.1",
+    "socket.io": "^4.5.4",
+    "socket.io-client": "^4.5.3",
+    "socket.io-mock": "^1.3.2",
     "supertest": "^6.3.3",
     "typescript": "^4.9.4",
     "vitest": "^0.32.2"

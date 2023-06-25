@@ -1,24 +1,190 @@
-import { expect, describe, beforeEach, it } from 'vitest';
+import { expect, describe, beforeEach, it, afterAll } from 'vitest';
 import Chatroom, { createMockChatroom } from '../../../src/defines/chat-room.define';
+import { faker } from '@faker-js/faker';
+import Onlinepeer from '../../../src/defines/peer.define';
+import { EasyChat, ECHATMETHOD } from '../../../src/easy-chat';
+import { constructSocketServer } from '../../integration-tests/websocket.test';
+import { Socket } from 'socket.io';
 
 describe('Chatroom', () => {
+  let onlinePeer: Onlinepeer;
+  let easyChatInstance: EasyChat;
+  let callbackArgs: any[];
+  let callbackEventArgs: any[];
   const callBacFn = (...args) => {
+    callbackArgs = args;
+  };
 
+  const callBackEventFn = (...args) => {
+    callbackEventArgs = args;
   };
 
   let instance: Chatroom;
+  let serverSocket: Socket;
 
-  beforeEach(() => {
-    instance = createMockChatroom(callBacFn);
+  beforeEach((done: any) => {
+    instance = createMockChatroom(callBackEventFn);
+    const { easyChat } = constructSocketServer();
+    easyChatInstance = easyChat;
+    easyChatInstance.io.on('connection', (socket: Socket) => {
+      serverSocket = socket;
+      done();
+    });
   });
 
+  afterAll(() => {
+    serverSocket.disconnect();
+    easyChatInstance.io.close();
+  });
 
-  it('its real instance of AuthController', () => {
+  it('its real instance of Chatroom', () => {
     expect(instance).toBeInstanceOf(Chatroom);
   });
 
+  it('should create an instance of Chatroom', () => {
+    const roomId = faker.string.uuid();
+    const userId = faker.string.uuid();
+    let localcallBacArgs: any[];
+    const callBacFn = (...args) => {
+      localcallBacArgs = args;
+    };
+    const room = Chatroom.create(roomId, userId, callBacFn);
+    expect(room).toBeInstanceOf(Chatroom);
+  });
 
-  it('should make socialLogin', async() => {
-    expect(await instance.socialLogin(userInfo as any)).toStrictEqual(mockValue);
+  it('create a instance of onlinePeer', () => {
+    const id = faker.string.uuid();
+    onlinePeer = new Onlinepeer(id, serverSocket, instance);
+  });
+
+  it('should make JOIN room request', async() => {
+    const request = {
+      method: ECHATMETHOD.JOIN,
+      data: { }
+    };
+    const joinReq = await instance
+      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    expect(joinReq).toHaveProperty('success');
+    expect(joinReq.success).toBe(true);
+    expect(onlinePeer.joined).toBe(true);
+    expect(callBacFn).toHaveBeenCalled();
+  });
+
+  it('should make close peer request', async() => {
+    const request = {
+      method: ECHATMETHOD.CLOSE_PEER,
+      data: { }
+    };
+    const closePeerReq = await instance.nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    expect(closePeerReq).toHaveProperty('success');
+    expect(closePeerReq.success).toBe(true);
+    expect(onlinePeer.joined).toBe(true);
+    expect(callBacFn).toHaveBeenCalled();
+  });
+
+  it('should make chat message send request', async() => {
+    const request = {
+      method: ECHATMETHOD.CHAT_MESSAGE,
+      data: {
+        id: faker.string.uuid(),
+        chatMessage: faker.string.alphanumeric(),
+        createTime: new Date(),
+        to: 'all',
+        whoType: '',
+        roomId: instance.id
+      }
+    };
+    const sendMsgReq = await instance
+      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    expect(sendMsgReq).toHaveProperty('success');
+    expect(sendMsgReq.success).toBe(true);
+    expect(onlinePeer.joined).toBe(true);
+    expect(callBacFn).toHaveBeenCalled();
+    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackEventArgs).toBeDefined();
+    expect(callbackEventArgs[0]).toBe(ECHATMETHOD.CHAT_MESSAGE);
+    expect(callbackEventArgs[1]).toHaveProperty('id');
+  });
+
+  it('should make delete message request', async() => {
+    const request = {
+      method: ECHATMETHOD.DELETE_MESSAGE,
+      data: {
+        to: 'all',
+        deleted: true,
+        id: faker.string.uuid()
+      }
+    };
+    const deleteMsgReq = await instance.nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    expect(deleteMsgReq).toHaveProperty('success');
+    expect(deleteMsgReq.success).toBe(true);
+    expect(onlinePeer.joined).toBe(true);
+    expect(callBacFn).toHaveBeenCalled();
+    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackEventArgs).toBeDefined();
+    expect(callbackEventArgs[0]).toBe(ECHATMETHOD.DELETE_MESSAGE);
+    expect(callbackEventArgs[1]).toHaveProperty('id');
+    expect(callbackEventArgs[1]).toHaveProperty('to');
+    expect(callbackEventArgs[1]).toHaveProperty('deleted');
+  });
+
+  it('should make update room request', async() => {
+    const request = {
+      method: ECHATMETHOD.UPDATE_ROOM,
+      data: {
+        to: 'all',
+        roomData: instance,
+        add: false
+      }
+    };
+    const updateRoomReq = await instance
+      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    expect(updateRoomReq).toHaveProperty('success');
+    expect(updateRoomReq.success).toBe(true);
+    expect(onlinePeer.joined).toBe(true);
+    expect(callBacFn).toHaveBeenCalled();
+    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackArgs).toBeDefined();
+    expect(callbackEventArgs[0]).toBe(ECHATMETHOD.UPDATE_ROOM);
+    expect(callbackEventArgs[1]).toHaveProperty('to');
+    expect(callbackEventArgs[1]).toHaveProperty('roomData');
+    expect(callbackEventArgs[1]).toHaveProperty('add');
+  });
+
+  it('should make delete room request', async() => {
+    const request = {
+      method: ECHATMETHOD.DELETE_ROOM,
+      data: {
+        to: 'all'
+      }
+    };
+    const deleteRoomReq = await instance
+      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    expect(deleteRoomReq).toHaveProperty('success');
+    expect(deleteRoomReq.success).toBe(true);
+    expect(onlinePeer.joined).toBe(true);
+    expect(callBacFn).toHaveBeenCalled();
+  });
+
+  it('should make update peer request', async() => {
+    const request = {
+      method: ECHATMETHOD.PEER_UPDATE,
+      data: {
+        to: 'all',
+        peerInfo: null // TODO
+      }
+    };
+    const updatePeerReq = await instance
+      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    expect(updatePeerReq).toHaveProperty('success');
+    expect(updatePeerReq.success).toBe(true);
+    expect(onlinePeer.joined).toBe(true);
+    expect(callBacFn).toHaveBeenCalled();
+    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackEventArgs).toBeDefined();
+    expect(callbackEventArgs[0]).toBe(ECHATMETHOD.PEER_UPDATE);
+    expect(callbackEventArgs[1]).toHaveProperty('to');
+    expect(callbackEventArgs[1]).toHaveProperty('peerInfo');
   });
 });
+

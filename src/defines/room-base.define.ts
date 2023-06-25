@@ -1,7 +1,6 @@
 import { getLogger } from 'log4js';
 import { EventEmitter } from 'events';
 import { Socket } from 'socket.io';
-import { TroomEvent } from '../types/union.types';
 import Onlinepeer from './peer.define';
 import Chatroom from './chat-room.define';
 import { ECHATMETHOD } from '../enums/chat.enum';
@@ -9,25 +8,36 @@ import { faker } from '@faker-js/faker';
 
 const logger = getLogger('RoomBase');
 
+
 export const createMockRoomBase = () => {
   return {
     id: faker.string.uuid()
   };
 };
 
+/**
+ * This class is the base class for all chat rooms.
+ */
 export default abstract class RoomBase
   extends EventEmitter {
+  /** The list of peers in the room. */
   public peers = new Map<string, Onlinepeer> ();
+  /** The list of chat rooms in the room. */
   public rooms = new Map<string, Chatroom> ();
-  /** if room is closed or not */
+  /** If the room is closed or not. */
   public closed = false;
-  /** room active time */
+  /** The time when the room was last active. */
   public activeTime = Date.now();
-  // born at
+  /** The time when the room was created. */
   protected bornTime = Date.now();
   protected reqString = 'onlinerequest';
   protected notifString = 'mainnotification';
 
+  /**
+   * Constructs a new RoomBase instance.
+   *
+   * @param id The ID of the room.
+   */
   constructor(
     public id: string // the room id
   ) {
@@ -35,6 +45,11 @@ export default abstract class RoomBase
     logger.info('RoomBase:constructor() [roomId:"%s"]', id);
   }
 
+  /**
+   * Sets up the socket handler for the room.
+   *
+   * @param peer The peer that the handler is being set up for.
+   */
   public setupSocketHandler(peer: Onlinepeer) {
     peer.socket.on(this.reqString, (request, cb) => {
       this.setActive();
@@ -50,6 +65,11 @@ export default abstract class RoomBase
     });
   }
 
+  /**
+   * Handles a new peer joining the room.
+   *
+   * @param peer The peer that is joining the room.
+   */
   public handlePeer(peer: Onlinepeer) {
     logger.info('handlePeer() id: %s, address: %s', peer.id, peer.socket.handshake.address);
 
@@ -87,6 +107,10 @@ export default abstract class RoomBase
     });
   }
 
+  /**
+   * The `getPeer()` method returns the peer with the specified ID, or `null` if the peer does not exist.
+   * @param peerId The peerId for the return peer.
+   */
   public getPeer(peerId: string) {
     return this.peers.get(peerId);
   }

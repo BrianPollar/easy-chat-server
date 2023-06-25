@@ -7,15 +7,19 @@ import Onlinepeer from './peer.define';
 import RoomBase from './room-base.define';
 import { faker } from '@faker-js/faker';
 
+export interface InowhandleSocketRequestRes {
+  success: boolean;
+  err: string;
+  msg: string;
+}
+
 export const createMockChatroom = (cb) => {
   return new Chatroom(faker.string.uuid(), faker.internet.userName(), cb);
 };
 
-
 export const createMockChatrooms = (length: number, cb) => {
   return Array.from({ length }).map(() => createMockChatroom(cb));
 };
-
 
 const logger = getLogger('Chatroom');
 
@@ -46,15 +50,23 @@ export default class Chatroom
       roomId, userId, cb);
   }
 
+  // eslint-disable-next-line max-statements
   public async nowhandleSocketRequest(
     peer: Onlinepeer,
     request,
     cb
-  ) {
+  ): Promise<InowhandleSocketRequestRes> {
+    const res: InowhandleSocketRequestRes = {
+      success: true,
+      err: '',
+      msg: ''
+    };
     switch (request.method as ECHATMETHOD) {
       case ECHATMETHOD.JOIN:
       {
         if (peer.joined) {
+          res.success = true;
+          res.msg = 'JOINED_ALREADY';
           cb(null, { joined: true });
           break;
         }
@@ -65,6 +77,8 @@ export default class Chatroom
         this.peers.forEach(joinedPeer => {
           peerInfos.push(joinedPeer.peerInfo());
         });
+
+        res.msg = 'SUCCESS';
 
         cb(null, { peers: peerInfos, joined: false });
 
@@ -86,6 +100,7 @@ export default class Chatroom
       case ECHATMETHOD.CLOSE_PEER:
       {
         logger.info('Chatroom:nowhandleSocketRequest:: - CLOSE_PEER, peer: %s', peer.id);
+        res.msg = 'SUCCESS';
         cb();
         peer.leaveRoom();
         break;
@@ -94,10 +109,9 @@ export default class Chatroom
       case ECHATMETHOD.CHAT_MESSAGE:
       {
         const { id, chatMessage, createTime, to, whoType, roomId } = request.data;
-        console.log('MAY BE THIS ALSO GETS THAT SHIT', request.data);
-        console.log('AND WE THERE HAVE THE ID', this.id);
 
         if (roomId !== this.id) {
+          res.msg = 'ROOM_ID_EXISTS';
           cb();
           return;
         }
@@ -123,6 +137,7 @@ export default class Chatroom
             this.nownotification(toPeer.socket, ECHATMETHOD.CHAT_MESSAGE, request.data, false);
           }
         }
+        res.msg = 'SUCCESS';
         cb();
 
         break;
@@ -140,6 +155,7 @@ export default class Chatroom
             this.nownotification(toPeer.socket, ECHATMETHOD.DELETE_MESSAGE, request.data, false);
           }
         }
+        res.msg = 'SUCCESS';
         cb();
         break;
       }
@@ -157,6 +173,7 @@ export default class Chatroom
             this.nownotification(toPeer.socket, ECHATMETHOD.UPDATE_ROOM, request.data, false);
           }
         }
+        res.msg = 'SUCCESS';
         cb();
         break;
       }
@@ -171,6 +188,7 @@ export default class Chatroom
             this.nownotification(toPeer.socket, ECHATMETHOD.DELETE_ROOM, request.data, false);
           }
         }
+        res.msg = 'SUCCESS';
         cb();
         break;
       }
@@ -186,6 +204,7 @@ export default class Chatroom
             this.nownotification(toPeer.socket, ECHATMETHOD.UPDATE_STATUS, request.data, false);
           }
         }
+        res.msg = 'SUCCESS';
         cb();
         break;
       }
@@ -200,11 +219,12 @@ export default class Chatroom
             this.nownotification(toPeer.socket, ECHATMETHOD.PEER_UPDATE, request.data, false);
           }
         }
+        res.msg = 'SUCCESS';
         cb();
         break;
       }
     }
-    return new Promise(resolve => resolve(true));
+    return new Promise(resolve => resolve(res));
   }
 
   protected emitEvent(eventName: TroomEvent, data?) {

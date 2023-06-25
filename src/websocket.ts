@@ -1,3 +1,6 @@
+/**
+ * This class represents the web socket server for the chat application.
+ */
 import * as http from 'http';
 import * as https from 'https';
 import { Server, Socket } from 'socket.io';
@@ -5,6 +8,7 @@ import { getLogger } from 'log4js';
 import Onlineroom from './defines/online-room.define';
 import Onlinepeer from './defines/peer.define';
 import { IsocketConfig } from './interfaces/socket.interface';
+
 const logger = getLogger('WebsocketServer');
 
 export class EasyChat {
@@ -35,18 +39,18 @@ export class EasyChat {
     }, this.roomStatusInterval * 1000);
   }
 
-  /** Run web Socket server
-   * This handles real time communication
-   * This mostly handles media server rtc
-   * connection operations
-   */
+  /**
+    * Run web Socket server
+    * This handles real time communication
+    * This mostly handles media server rtc
+    * connection operations
+    */
   run(allowedCorsOrigins: string[]) {
     this.io = new Server(this.httpsServer, {
-    // io = socketio.listen(httpsServer, {
-    /** cors: {
-			origin: 'http://localhost:8080',
-			methods: ['GET', 'POST']
-		},**/
+      // io = socketio.listen(httpsServer, {
+      /**
+      * Allow cross-origin requests from the specified origins.
+      */
       cors: {
         origin: [...allowedCorsOrigins],
         methods: ['GET', 'POST']
@@ -68,13 +72,18 @@ export class EasyChat {
     this.onlineRoom.emit(eventName, data);
   }
 
-  private handleMainConnection(socket: Socket) {
+  /**
+    * Handle a new connection from a peer.
+    *
+    * @param socket The socket object for the new peer.
+    */
+  handleMainConnection(socket: Socket) {
     const { userId } = socket.handshake.query;
     if (!userId) {
       logger.warn(
         `handleMainConnection:: connection
-					request without
-					userId`);
+          request without
+          userId`);
       socket.disconnect(true);// disconnect on missing parameter
       return;
     }
@@ -89,14 +98,14 @@ export class EasyChat {
     }
 
     let peer = this.onlineRoom.getPeer(
-			userId as string
+      userId as string
     );
 
     if (!peer) {
       peer = new Onlinepeer(
-					userId as string,
-					socket,
-					this.onlineRoom
+          userId as string,
+          socket,
+          this.onlineRoom
       );
       this.onlineRoom.handlePeer(peer);
       logger.info(
