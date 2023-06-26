@@ -7,18 +7,18 @@ import { ECHATMETHOD } from '../enums/chat.enum';
   * The status of a chat message.
   */
 export type TchatMsgStatus =
-   'sent' |
-   'pending' |
-   'failed' |
-   'recieved' |
-   'viewed';
+  'sent' |
+  'pending' |
+  'failed' |
+  'recieved' |
+  'viewed';
 
 /**
   * The sender of a chat message.
   */
 export type TchatMsgWho =
-   'me' |
-   'partner';
+  'me' |
+  'partner';
 
 /**
   * The type of a chat room event.

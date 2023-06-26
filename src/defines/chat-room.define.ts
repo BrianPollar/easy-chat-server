@@ -8,16 +8,32 @@ import RoomBase from './room-base.define';
 import { faker } from '@faker-js/faker';
 
 export interface InowhandleSocketRequestRes {
+  // Indicates whether the request was successful.
   success: boolean;
+
+  // The error message, if any.
   err: string;
+
+  // The message to be sent to the client.
   msg: string;
 }
 
+
+// Creates a mock chatroom.
+//
+// The `cb` callback function is called when the chatroom is created.
 export const createMockChatroom = (cb) => {
+  // Creates a new chatroom with a random UUID and username.
   return new Chatroom(faker.string.uuid(), faker.internet.userName(), cb);
 };
 
+// Creates a mock chatrooms.
+//
+// The `length` parameter specifies the number of chatrooms to create.
+//
+// The `cb` callback function is called when each chatroom is created.
 export const createMockChatrooms = (length: number, cb) => {
+  // Creates an array of `length` chatrooms.
   return Array.from({ length }).map(() => createMockChatroom(cb));
 };
 
@@ -26,8 +42,13 @@ const logger = getLogger('Chatroom');
 export default class Chatroom
   extends RoomBase {
   // born at
+  // the time the chatroom was created
   protected override bornTime = Date.now();
+
+  // the string that is used to identify requests to this chatroom.
   protected override reqString = 'mainrequest';
+
+  // the string that is used to identify notifications from this chatroom.
   protected override notifString = 'mainnotification';
 
   constructor(

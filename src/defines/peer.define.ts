@@ -9,7 +9,6 @@ import { faker } from '@faker-js/faker';
 const logger = getLogger('Onlinepeer');
 
 export const createMockPeer = (socket: Socket, room: Chatroom | Onlineroom) => {
-  return new Onlinepeer(faker.string.uuid(), socket, room);
 };
 
 export const createMockPeers = (length: number, socket: Socket, room: Chatroom | Onlineroom) => {

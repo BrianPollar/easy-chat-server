@@ -12,8 +12,16 @@ import { IsocketConfig } from './interfaces/socket.interface';
 const logger = getLogger('WebsocketServer');
 
 export class EasyChat {
-  // general room on initial connect
+  /**
+   * general room on initial connect
+   * This is the room that all users will be connected to when they first connect to the chat server.
+   */
   onlineRoom: Onlineroom;
+
+  /**
+   *  io instance
+   * This is the instance of the Socket.IO server that the chat application is running on.
+   */
   io: Server;
 
   constructor(
