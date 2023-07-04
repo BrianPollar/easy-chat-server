@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { expect, describe, beforeEach, it, afterAll } from 'vitest';
 import Onlinepeer from '../../../src/defines/peer.define';
 import { constructSocketServer } from '../../integration-tests/websocket.test';
@@ -60,22 +61,35 @@ describe('Onlinepeer', () => {
 
   });
 
-  it('should close peer', () => {
+  it('#close should close peer', () => {
     instance.close();
     expect(instance.closed).toBe(true);
+    // @ts-ignore
+    expect(instance.closeResource).toHaveBeenCalled();
   });
 
-  it('leave room', () => {
+  it('#leaveRoom should leave room', () => {
     instance.leaveRoom();
     expect(instance.closed).toBe(true);
+    // @ts-ignore
+    expect(instance.closeResource).toHaveBeenCalled();
   });
 
-  it('should checkClose', () => {
+  it('#handlePeerReconnect should handle peer reconnect', () => {
+    instance.handlePeerReconnect();
+    expect(instance.handlePeer).toHaveBeenCalled();
+  });
+
+  it('#handlePeer should handle peer connections', () => {
+    instance.handlePeer();
+  });
+
+  it('#checkClose should check if peer is closed', () => {
     instance.checkClose();
     expect(instance.checkClose).toHaveBeenCalled();
   });
 
-  it('should return peer info', () => {
+  it('#peerInfo should return peer info', () => {
     const peerInfo = instance.peerInfo();
     expect(peerInfo.id).toBeDefined();
     expect(peerInfo.durationTime).toBeDefined();

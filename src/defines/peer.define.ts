@@ -3,8 +3,6 @@ import { EventEmitter } from 'events';
 import { getLogger } from 'log4js';
 import Chatroom from './chat-room.define';
 import Onlineroom from './online-room.define';
-import { faker } from '@faker-js/faker';
-
 
 const logger = getLogger('Onlinepeer');
 

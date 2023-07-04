@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { expect, describe, beforeEach, it, afterAll } from 'vitest';
 import Chatroom, { createMockChatroom } from '../../../src/defines/chat-room.define';
 import { faker } from '@faker-js/faker';
-import Onlinepeer from '../../../src/defines/peer.define';
+import Onlinepeer, { createMockPeer } from '../../../src/defines/peer.define';
 import { EasyChat, ECHATMETHOD } from '../../../src/easy-chat';
 import { constructSocketServer } from '../../integration-tests/websocket.test';
 import { Socket } from 'socket.io';
+import { createMockPeerinfo } from 'easy-chat-client/src/defines/chat-room.define';
 
 describe('Chatroom', () => {
   let onlinePeer: Onlinepeer;
@@ -41,7 +43,7 @@ describe('Chatroom', () => {
     expect(instance).toBeInstanceOf(Chatroom);
   });
 
-  it('should create an instance of Chatroom', () => {
+  it('#create static should create an instance of Chatroom', () => {
     const roomId = faker.string.uuid();
     const userId = faker.string.uuid();
     let localcallBacArgs: any[];
@@ -57,7 +59,7 @@ describe('Chatroom', () => {
     onlinePeer = new Onlinepeer(id, serverSocket, instance);
   });
 
-  it('should make JOIN room request', async() => {
+  it('#nowhandleSocketRequest should make JOIN room request', async() => {
     const request = {
       method: ECHATMETHOD.JOIN,
       data: { }
@@ -68,9 +70,11 @@ describe('Chatroom', () => {
     expect(joinReq.success).toBe(true);
     expect(onlinePeer.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
+    // @ts-ignore
+    expect(instance.nownotification).toHaveBeenCalled();
   });
 
-  it('should make close peer request', async() => {
+  it('#nowhandleSocketRequest should make close peer request', async() => {
     const request = {
       method: ECHATMETHOD.CLOSE_PEER,
       data: { }
@@ -82,7 +86,7 @@ describe('Chatroom', () => {
     expect(callBacFn).toHaveBeenCalled();
   });
 
-  it('should make chat message send request', async() => {
+  it('#nowhandleSocketRequest should make chat message send request', async() => {
     const request = {
       method: ECHATMETHOD.CHAT_MESSAGE,
       data: {
@@ -104,9 +108,11 @@ describe('Chatroom', () => {
     expect(callbackEventArgs).toBeDefined();
     expect(callbackEventArgs[0]).toBe(ECHATMETHOD.CHAT_MESSAGE);
     expect(callbackEventArgs[1]).toHaveProperty('id');
+    // @ts-ignore
+    expect(instance.nownotification).toHaveBeenCalled();
   });
 
-  it('should make delete message request', async() => {
+  it('#nowhandleSocketRequest should make delete message request', async() => {
     const request = {
       method: ECHATMETHOD.DELETE_MESSAGE,
       data: {
@@ -126,9 +132,11 @@ describe('Chatroom', () => {
     expect(callbackEventArgs[1]).toHaveProperty('id');
     expect(callbackEventArgs[1]).toHaveProperty('to');
     expect(callbackEventArgs[1]).toHaveProperty('deleted');
+    // @ts-ignore
+    expect(instance.nownotification).toHaveBeenCalled();
   });
 
-  it('should make update room request', async() => {
+  it('#nowhandleSocketRequest should make update room request', async() => {
     const request = {
       method: ECHATMETHOD.UPDATE_ROOM,
       data: {
@@ -149,9 +157,11 @@ describe('Chatroom', () => {
     expect(callbackEventArgs[1]).toHaveProperty('to');
     expect(callbackEventArgs[1]).toHaveProperty('roomData');
     expect(callbackEventArgs[1]).toHaveProperty('add');
+    // @ts-ignore
+    expect(instance.nownotification).toHaveBeenCalled();
   });
 
-  it('should make delete room request', async() => {
+  it('#nowhandleSocketRequest should make delete room request', async() => {
     const request = {
       method: ECHATMETHOD.DELETE_ROOM,
       data: {
@@ -164,9 +174,11 @@ describe('Chatroom', () => {
     expect(deleteRoomReq.success).toBe(true);
     expect(onlinePeer.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
+    // @ts-ignore
+    expect(instance.nownotification).toHaveBeenCalled();
   });
 
-  it('should make update peer request', async() => {
+  it('#nowhandleSocketRequest should make update peer request', async() => {
     const request = {
       method: ECHATMETHOD.PEER_UPDATE,
       data: {
@@ -185,6 +197,19 @@ describe('Chatroom', () => {
     expect(callbackEventArgs[0]).toBe(ECHATMETHOD.PEER_UPDATE);
     expect(callbackEventArgs[1]).toHaveProperty('to');
     expect(callbackEventArgs[1]).toHaveProperty('peerInfo');
+    // @ts-ignore
+    expect(instance.nownotification).toHaveBeenCalled();
+  });
+
+  it('#emitEvent should call the callback function', () => {
+    // @ts-ignore
+    const peer = createMockPeerinfo();
+    // @ts-ignore
+    instance.emitEvent(ECHATMETHOD.NEW_PEER, peer);
+    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackEventArgs).toBeDefined();
+    expect(callbackEventArgs[0]).toBe(ECHATMETHOD.NEW_PEER);
+    expect(callbackEventArgs[1]).toBe(ECHATMETHOD.NEW_PEER);
   });
 });
 

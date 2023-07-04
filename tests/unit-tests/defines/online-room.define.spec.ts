@@ -48,7 +48,7 @@ describe('Onlineroom', () => {
     expect(instance.rooms).toBeInstanceOf(Map);
   });
 
-  it('should make JOIN room request', async() => {
+  it('#nowhandleSocketRequest should make JOIN room request', async() => {
     const joinReq = await instance.nowhandleSocketRequest(onlinePeer, ECHATMETHOD.JOIN, callBacFn);
     expect(joinReq).toHaveProperty('success');
     expect(joinReq.success).toBe(true);
@@ -56,7 +56,7 @@ describe('Onlineroom', () => {
     expect(callBacFn).toHaveBeenCalled();
   });
 
-  it('should make JOIN room request', async() => {
+  it('#nowhandleSocketRequest should make JOIN room request', async() => {
     const closePeerReq = await instance.nowhandleSocketRequest(onlinePeer, ECHATMETHOD.CLOSE_PEER, callBacFn);
     expect(closePeerReq).toHaveProperty('success');
     expect(closePeerReq.success).toBe(true);
@@ -64,11 +64,16 @@ describe('Onlineroom', () => {
     expect(callBacFn).toHaveBeenCalled();
   });
 
-  it('should make JOIN room request', async() => {
+  it('#nowhandleSocketRequest should make JOIN room request', async() => {
     const sendMsgReq = await instance.nowhandleSocketRequest(onlinePeer, ECHATMETHOD.NEW_ROOM, callBacFn);
     expect(sendMsgReq).toHaveProperty('success');
     expect(sendMsgReq.success).toBe(true);
     expect(onlinePeer.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
+  });
+
+  it('#callBacFn should call emit events for nodejs', () => {
+    instance.callBacFn('event', {});
+    expect(instance.emit).toHaveBeenCalled();
   });
 });
