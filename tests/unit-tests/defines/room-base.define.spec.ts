@@ -7,12 +7,18 @@ import { EasyChat } from '../../../src/websocket';
 import { faker } from '@faker-js/faker';
 import { createMockChatroom } from '../../../src/easy-chat';
 import Chatroom from '../../../src/defines/chat-room.define';
+import RoomBase from '../../../src/defines/room-base.define';
 
-describe('Onlinepeer', () => {
-  let easyChatInstance: EasyChat;
-  let instance: Onlinepeer;
-  let serverSocket: Socket;
-  let chatRoomInstance: Chatroom;
+class BaseTesterBase extends RoomBase {
+  nowhandleSocketRequest(
+    peer: Onlinepeer,
+    request,
+    cb
+  ): Promise<any>
+};
+
+describe('RoomBase', () => {
+  
   const callBacFn = (...args) => {
 
   };
