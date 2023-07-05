@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { expect, describe, beforeEach, it, afterAll } from 'vitest';
+import { vi, expect, describe, beforeEach, it } from 'vitest';
 import Chatroom, { createMockChatroom } from '../../../src/defines/chat-room.define';
 import { faker } from '@faker-js/faker';
-import Onlinepeer, { createMockPeer } from '../../../src/defines/peer.define';
-import { EasyChat, ECHATMETHOD } from '../../../src/easy-chat';
-import { constructSocketServer } from '../../integration-tests/websocket.test';
-import { Socket } from 'socket.io';
+import { ECHATMETHOD } from '../../../src/easy-chat';
 import { createMockPeerinfo } from 'easy-chat-client/src/defines/chat-room.define';
+import Onlinepeer from '../../../src/defines/peer.define';
+
+
+const peerMock = {
+  id: faker.string.uuid(),
+  joined: true,
+  socket: null,
+  leaveRoom: vi.fn()
+} as unknown as Onlinepeer;
 
 describe('Chatroom', () => {
-  let onlinePeer: Onlinepeer;
-  let easyChatInstance: EasyChat;
   let callbackArgs: any[];
   let callbackEventArgs: any[];
   const callBacFn = (...args) => {
@@ -22,21 +26,9 @@ describe('Chatroom', () => {
   };
 
   let instance: Chatroom;
-  let serverSocket: Socket;
 
-  beforeEach((done: any) => {
+  beforeEach(() => {
     instance = createMockChatroom(callBackEventFn);
-    const { easyChat } = constructSocketServer();
-    easyChatInstance = easyChat;
-    easyChatInstance.io.on('connection', (socket: Socket) => {
-      serverSocket = socket;
-      done();
-    });
-  });
-
-  afterAll(() => {
-    serverSocket.disconnect();
-    easyChatInstance.io.close();
   });
 
   it('its real instance of Chatroom', () => {
@@ -54,21 +46,16 @@ describe('Chatroom', () => {
     expect(room).toBeInstanceOf(Chatroom);
   });
 
-  it('create a instance of onlinePeer', () => {
-    const id = faker.string.uuid();
-    onlinePeer = new Onlinepeer(id, serverSocket, instance);
-  });
-
   it('#nowhandleSocketRequest should make JOIN room request', async() => {
     const request = {
       method: ECHATMETHOD.JOIN,
       data: { }
     };
     const joinReq = await instance
-      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+      .nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(joinReq).toHaveProperty('success');
     expect(joinReq.success).toBe(true);
-    expect(onlinePeer.joined).toBe(true);
+    expect(peerMock.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
     // @ts-ignore
     expect(instance.nownotification).toHaveBeenCalled();
@@ -79,10 +66,10 @@ describe('Chatroom', () => {
       method: ECHATMETHOD.CLOSE_PEER,
       data: { }
     };
-    const closePeerReq = await instance.nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    const closePeerReq = await instance.nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(closePeerReq).toHaveProperty('success');
     expect(closePeerReq.success).toBe(true);
-    expect(onlinePeer.joined).toBe(true);
+    expect(peerMock.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
   });
 
@@ -99,10 +86,10 @@ describe('Chatroom', () => {
       }
     };
     const sendMsgReq = await instance
-      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+      .nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(sendMsgReq).toHaveProperty('success');
     expect(sendMsgReq.success).toBe(true);
-    expect(onlinePeer.joined).toBe(true);
+    expect(peerMock.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
     expect(callBackEventFn).toHaveBeenCalled();
     expect(callbackEventArgs).toBeDefined();
@@ -121,10 +108,10 @@ describe('Chatroom', () => {
         id: faker.string.uuid()
       }
     };
-    const deleteMsgReq = await instance.nowhandleSocketRequest(onlinePeer, request, callBacFn);
+    const deleteMsgReq = await instance.nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(deleteMsgReq).toHaveProperty('success');
     expect(deleteMsgReq.success).toBe(true);
-    expect(onlinePeer.joined).toBe(true);
+    expect(peerMock.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
     expect(callBackEventFn).toHaveBeenCalled();
     expect(callbackEventArgs).toBeDefined();
@@ -146,10 +133,10 @@ describe('Chatroom', () => {
       }
     };
     const updateRoomReq = await instance
-      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+      .nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(updateRoomReq).toHaveProperty('success');
     expect(updateRoomReq.success).toBe(true);
-    expect(onlinePeer.joined).toBe(true);
+    expect(peerMock.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
     expect(callBackEventFn).toHaveBeenCalled();
     expect(callbackArgs).toBeDefined();
@@ -169,10 +156,10 @@ describe('Chatroom', () => {
       }
     };
     const deleteRoomReq = await instance
-      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+      .nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(deleteRoomReq).toHaveProperty('success');
     expect(deleteRoomReq.success).toBe(true);
-    expect(onlinePeer.joined).toBe(true);
+    expect(peerMock.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
     // @ts-ignore
     expect(instance.nownotification).toHaveBeenCalled();
@@ -187,10 +174,10 @@ describe('Chatroom', () => {
       }
     };
     const updatePeerReq = await instance
-      .nowhandleSocketRequest(onlinePeer, request, callBacFn);
+      .nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(updatePeerReq).toHaveProperty('success');
     expect(updatePeerReq.success).toBe(true);
-    expect(onlinePeer.joined).toBe(true);
+    expect(peerMock.joined).toBe(true);
     expect(callBacFn).toHaveBeenCalled();
     expect(callBackEventFn).toHaveBeenCalled();
     expect(callbackEventArgs).toBeDefined();

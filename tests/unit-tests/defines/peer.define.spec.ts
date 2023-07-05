@@ -1,44 +1,34 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { expect, describe, beforeEach, it, afterAll } from 'vitest';
+import { vi, expect, describe, beforeEach, it } from 'vitest';
 import Onlinepeer from '../../../src/defines/peer.define';
-import { constructSocketServer } from '../../integration-tests/websocket.test';
 import { Socket } from 'socket.io';
-import { EasyChat } from '../../../src/websocket';
 import { faker } from '@faker-js/faker';
-import { createMockChatroom } from '../../../src/easy-chat';
-import Chatroom from '../../../src/defines/chat-room.define';
+
+const socketMock = {
+
+} as Socket;
+
+const roomMock = {
+
+} as Onlineroom;
 
 describe('Onlinepeer', () => {
-  let easyChatInstance: EasyChat;
   let instance: Onlinepeer;
   let serverSocket: Socket;
-  let chatRoomInstance: Chatroom;
   const callBacFn = (...args) => {
 
   };
 
-  beforeEach((done: any) => {
-    chatRoomInstance = createMockChatroom(callBacFn);
-    const { easyChat } = constructSocketServer();
-    easyChatInstance = easyChat;
-    easyChatInstance.io.on('connection', (socket: Socket) => {
-      serverSocket = socket;
-      instance = new Onlinepeer(faker.string.uuid(), serverSocket, chatRoomInstance);
-      done();
-    });
-  });
-
-  afterAll(() => {
-    serverSocket.disconnect();
-    easyChatInstance.io.close();
+  beforeEach(() => {
+    instance = new Onlinepeer(
+      faker.string.uuid(),
+      socketMock,
+      roomMock
+    );
   });
 
   it('should be a real instance Onlinepeer', () => {
     expect(instance).toBeInstanceOf(Onlinepeer);
-  });
-
-  it('should be a real instance Onlinepeer', () => {
-    expect(easyChatInstance).toBeInstanceOf(EasyChat);
   });
 
   it('should have properties undefined', () => {

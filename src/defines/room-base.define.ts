@@ -129,7 +129,7 @@ export default abstract class RoomBase
     this.emit('close');
   }
 
-  checkDeserted() {
+  public checkDeserted() {
     if (this.checkEmpty()) {
       logger.info('RoomBase:checkDeserted:: - room %s is empty , now close it!', this.id);
       this.close();
@@ -143,7 +143,7 @@ export default abstract class RoomBase
     }
   }
 
-  statusReport() {
+  public statusReport() {
     const dura = Math.floor((Date.now() - this.bornTime) / 1000);
     const lastActive = Math.floor((Date.now() - this.activeTime) / 1000);
 
@@ -155,7 +155,7 @@ export default abstract class RoomBase
     };
   }
 
-  sendMsgToallpeers(
+  public sendMsgToallpeers(
     peerId: string,
     method: ECHATMETHOD,
     data
