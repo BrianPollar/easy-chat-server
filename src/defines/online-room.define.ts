@@ -77,6 +77,7 @@ export default class Onlineroom
           break;
         }
 
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-array-constructor
         const peerInfos = new Array<any>();
 
@@ -86,6 +87,7 @@ export default class Onlineroom
 
         res.msg = 'SUCCESS';
         cb(null, { peers: peerInfos, joined: false });
+
 
         this.nownotification(
           peer.socket,

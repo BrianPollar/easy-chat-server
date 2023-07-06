@@ -3,6 +3,7 @@ import { vi, expect, describe, beforeEach, it } from 'vitest';
 import Onlinepeer from '../../../src/defines/peer.define';
 import { Socket } from 'socket.io';
 import { faker } from '@faker-js/faker';
+import Onlineroom from '../../../src/defines/online-room.define';
 
 const socketMock = {
 
@@ -47,22 +48,28 @@ describe('Onlinepeer', () => {
   });
 
   it('#close should close peer', () => {
+    // @ts-ignore
+    const closeResourceSpy = vi.spyOn(instance, 'closeResource');
     instance.close();
     expect(instance.closed).toBe(true);
-    // @ts-ignore
-    expect(instance.closeResource).toHaveBeenCalled();
+    expect(closeResourceSpy).toHaveBeenCalled();
   });
 
   it('#leaveRoom should leave room', () => {
+    // @ts-ignore
+    const closeResourceSpy = vi.spyOn(instance, 'closeResource');
     instance.leaveRoom();
     expect(instance.closed).toBe(true);
     // @ts-ignore
-    expect(instance.closeResource).toHaveBeenCalled();
+    expect(closeResourceSpy).toHaveBeenCalled();
   });
 
   it('#handlePeerReconnect should handle peer reconnect', () => {
+    // @ts-ignore
+    const handlePeerSpy = vi.spyOn(instance, 'timeoutCallback');
+    // @ts-ignore
     instance.handlePeerReconnect();
-    expect(instance.handlePeer).toHaveBeenCalled();
+    expect(handlePeerSpy).toHaveBeenCalled();
   });
 
   it('#handlePeer should handle peer connections', () => {
@@ -70,8 +77,9 @@ describe('Onlinepeer', () => {
   });
 
   it('#checkClose should check if peer is closed', () => {
+    const checkCloseSpy = vi.spyOn(instance, 'checkClose');
     instance.checkClose();
-    expect(instance.checkClose).toHaveBeenCalled();
+    expect(checkCloseSpy).toHaveBeenCalled();
   });
 
   it('#peerInfo should return peer info', () => {

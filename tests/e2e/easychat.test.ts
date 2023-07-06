@@ -2,7 +2,7 @@ import { expect, describe, beforeEach, it, afterAll } from 'vitest';
 import { EasyChat } from '../../src/easy-chat';
 import { constructSocketServer } from '../integration-tests/websocket.test';
 import { EasyChatClient } from 'easy-chat-client/src/websocket';
-import { ChatRoom, createChatRoom } from 'easy-chat-client/src/defines/chat-room.define';
+import { ChatRoom } from 'easy-chat-client/src/defines/chat-room.define';
 import { EasyChatController } from 'easy-chat-client/src/controllers/chat.controller';
 import { faker } from '@faker-js/faker';
 
@@ -13,7 +13,7 @@ describe('EasyChat end to end', () => {
 
   let activeRoom: ChatRoom;
 
-  beforeEach((done) => {
+  beforeEach(() => {
     const { easyChat, easyChatClient, easyChatController } = constructSocketServer();
     easyChatInstance = easyChat;
     easyChatClientInstance = easyChatClient;
@@ -21,7 +21,7 @@ describe('EasyChat end to end', () => {
   });
 
   afterAll(() => {
-    easyChatInstance.io.close();
+    // easyChatInstance.io.close();
     easyChatClientInstance.disconectSocket();
   });
 

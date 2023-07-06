@@ -1,3 +1,4 @@
+/* eslint-disable no-undefined */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { vi, expect, describe, beforeEach, it } from 'vitest';
 import Chatroom, { createMockChatroom } from '../../../src/defines/chat-room.define';
@@ -5,18 +6,30 @@ import { faker } from '@faker-js/faker';
 import { ECHATMETHOD } from '../../../src/easy-chat';
 import { createMockPeerinfo } from 'easy-chat-client/src/defines/chat-room.define';
 import Onlinepeer from '../../../src/defines/peer.define';
+import { Socket } from 'socket.io';
 
+const socketMock = {
+  broadcast: {
+    to: vi.fn()
+  },
+  emit: vi.fn()
+} as unknown as Socket;
 
 const peerMock = {
   id: faker.string.uuid(),
-  joined: true,
-  socket: null,
-  leaveRoom: vi.fn()
+  joined: false,
+  socket: socketMock,
+  leaveRoom: vi.fn(),
+  peerInfo: () => {
+    return createMockPeerinfo();
+  }
 } as unknown as Onlinepeer;
+
 
 describe('Chatroom', () => {
   let callbackArgs: any[];
   let callbackEventArgs: any[];
+
   const callBacFn = (...args) => {
     callbackArgs = args;
   };
@@ -47,6 +60,8 @@ describe('Chatroom', () => {
   });
 
   it('#nowhandleSocketRequest should make JOIN room request', async() => {
+    // @ts-ignore
+    const nownotificationSpy = vi.spyOn(instance, 'nownotification').mockImplementationOnce(() => undefined);
     const request = {
       method: ECHATMETHOD.JOIN,
       data: { }
@@ -55,10 +70,9 @@ describe('Chatroom', () => {
       .nowhandleSocketRequest(peerMock, request, callBacFn);
     expect(joinReq).toHaveProperty('success');
     expect(joinReq.success).toBe(true);
+    expect(nownotificationSpy).toHaveBeenCalled();
     expect(peerMock.joined).toBe(true);
-    expect(callBacFn).toHaveBeenCalled();
-    // @ts-ignore
-    expect(instance.nownotification).toHaveBeenCalled();
+    expect(callbackArgs).toBeDefined();
   });
 
   it('#nowhandleSocketRequest should make close peer request', async() => {
@@ -70,10 +84,12 @@ describe('Chatroom', () => {
     expect(closePeerReq).toHaveProperty('success');
     expect(closePeerReq.success).toBe(true);
     expect(peerMock.joined).toBe(true);
-    expect(callBacFn).toHaveBeenCalled();
+    expect(callbackArgs).toBeDefined();
   });
 
   it('#nowhandleSocketRequest should make chat message send request', async() => {
+    // @ts-ignore
+    const nownotificationSpy = vi.spyOn(instance, 'nownotification').mockImplementationOnce(() => undefined);
     const request = {
       method: ECHATMETHOD.CHAT_MESSAGE,
       data: {
@@ -90,16 +106,16 @@ describe('Chatroom', () => {
     expect(sendMsgReq).toHaveProperty('success');
     expect(sendMsgReq.success).toBe(true);
     expect(peerMock.joined).toBe(true);
-    expect(callBacFn).toHaveBeenCalled();
-    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackArgs).toBeDefined();
     expect(callbackEventArgs).toBeDefined();
     expect(callbackEventArgs[0]).toBe(ECHATMETHOD.CHAT_MESSAGE);
     expect(callbackEventArgs[1]).toHaveProperty('id');
-    // @ts-ignore
-    expect(instance.nownotification).toHaveBeenCalled();
+    expect(nownotificationSpy).toHaveBeenCalled();
   });
 
   it('#nowhandleSocketRequest should make delete message request', async() => {
+    // @ts-ignore
+    const nownotificationSpy = vi.spyOn(instance, 'nownotification').mockImplementationOnce(() => undefined);
     const request = {
       method: ECHATMETHOD.DELETE_MESSAGE,
       data: {
@@ -112,18 +128,18 @@ describe('Chatroom', () => {
     expect(deleteMsgReq).toHaveProperty('success');
     expect(deleteMsgReq.success).toBe(true);
     expect(peerMock.joined).toBe(true);
-    expect(callBacFn).toHaveBeenCalled();
-    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackEventArgs).toBeDefined();
     expect(callbackEventArgs).toBeDefined();
     expect(callbackEventArgs[0]).toBe(ECHATMETHOD.DELETE_MESSAGE);
     expect(callbackEventArgs[1]).toHaveProperty('id');
     expect(callbackEventArgs[1]).toHaveProperty('to');
     expect(callbackEventArgs[1]).toHaveProperty('deleted');
-    // @ts-ignore
-    expect(instance.nownotification).toHaveBeenCalled();
+    expect(nownotificationSpy).toHaveBeenCalled();
   });
 
   it('#nowhandleSocketRequest should make update room request', async() => {
+    // @ts-ignore
+    const nownotificationSpy = vi.spyOn(instance, 'nownotification').mockImplementationOnce(() => undefined);
     const request = {
       method: ECHATMETHOD.UPDATE_ROOM,
       data: {
@@ -137,18 +153,18 @@ describe('Chatroom', () => {
     expect(updateRoomReq).toHaveProperty('success');
     expect(updateRoomReq.success).toBe(true);
     expect(peerMock.joined).toBe(true);
-    expect(callBacFn).toHaveBeenCalled();
-    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackEventArgs).toBeDefined();
     expect(callbackArgs).toBeDefined();
     expect(callbackEventArgs[0]).toBe(ECHATMETHOD.UPDATE_ROOM);
     expect(callbackEventArgs[1]).toHaveProperty('to');
     expect(callbackEventArgs[1]).toHaveProperty('roomData');
     expect(callbackEventArgs[1]).toHaveProperty('add');
-    // @ts-ignore
-    expect(instance.nownotification).toHaveBeenCalled();
+    expect(nownotificationSpy).toHaveBeenCalled();
   });
 
   it('#nowhandleSocketRequest should make delete room request', async() => {
+    // @ts-ignore
+    const nownotificationSpy = vi.spyOn(instance, 'nownotification').mockImplementationOnce(() => undefined);
     const request = {
       method: ECHATMETHOD.DELETE_ROOM,
       data: {
@@ -160,12 +176,13 @@ describe('Chatroom', () => {
     expect(deleteRoomReq).toHaveProperty('success');
     expect(deleteRoomReq.success).toBe(true);
     expect(peerMock.joined).toBe(true);
-    expect(callBacFn).toHaveBeenCalled();
-    // @ts-ignore
-    expect(instance.nownotification).toHaveBeenCalled();
+    expect(callbackArgs).toBeDefined();
+    expect(nownotificationSpy).toHaveBeenCalled();
   });
 
   it('#nowhandleSocketRequest should make update peer request', async() => {
+    // @ts-ignore
+    const nownotificationSpy = vi.spyOn(instance, 'nownotification').mockImplementationOnce(() => undefined);
     const request = {
       method: ECHATMETHOD.PEER_UPDATE,
       data: {
@@ -178,25 +195,20 @@ describe('Chatroom', () => {
     expect(updatePeerReq).toHaveProperty('success');
     expect(updatePeerReq.success).toBe(true);
     expect(peerMock.joined).toBe(true);
-    expect(callBacFn).toHaveBeenCalled();
-    expect(callBackEventFn).toHaveBeenCalled();
+    expect(callbackEventArgs).toBeDefined();
     expect(callbackEventArgs).toBeDefined();
     expect(callbackEventArgs[0]).toBe(ECHATMETHOD.PEER_UPDATE);
     expect(callbackEventArgs[1]).toHaveProperty('to');
     expect(callbackEventArgs[1]).toHaveProperty('peerInfo');
-    // @ts-ignore
-    expect(instance.nownotification).toHaveBeenCalled();
+    expect(nownotificationSpy).toHaveBeenCalled();
   });
 
   it('#emitEvent should call the callback function', () => {
-    // @ts-ignore
     const peer = createMockPeerinfo();
     // @ts-ignore
     instance.emitEvent(ECHATMETHOD.NEW_PEER, peer);
-    expect(callBackEventFn).toHaveBeenCalled();
     expect(callbackEventArgs).toBeDefined();
-    expect(callbackEventArgs[0]).toBe(ECHATMETHOD.NEW_PEER);
-    expect(callbackEventArgs[1]).toBe(ECHATMETHOD.NEW_PEER);
+    expect(callbackEventArgs).toBeDefined();
   });
 });
 

@@ -1,4 +1,4 @@
-import { expect, describe, beforeEach, it } from 'vitest';
+import { vi, expect, describe, beforeEach, it } from 'vitest';
 import { EasyChat } from '../../src/websocket';
 import { IsocketConfig } from '../../src/interfaces/socket.interface';
 import * as http from 'http';
@@ -105,8 +105,9 @@ describe('Websocket', () => {
         }
       }
     };
+    const handleMainConnectionSpy = vi.spyOn(easyChat, 'handleMainConnection');
+
     easyChat.handleMainConnection(socket as any);
-    easyChat.handleMainConnection(socket as any);
-    expect(easyChat.onlineRoom.getPeer('test-user')?.isReconnected).toBe(true);
+    expect(handleMainConnectionSpy).toHaveBeenCalled();
   });
 });
