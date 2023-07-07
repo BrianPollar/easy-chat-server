@@ -3,7 +3,7 @@ import { EasyChat } from '../../src/websocket';
 import { IsocketConfig } from '../../src/interfaces/socket.interface';
 import * as http from 'http';
 import * as https from 'https';
-import express from 'express';
+import express, { Application } from 'express';
 import { initEasyChat } from 'easy-chat-client/src/websocket';
 import { faker } from '@faker-js/faker';
 
@@ -20,7 +20,7 @@ export const constructSocketServer = (
   port = 4000,
   roomStatusInterval = 100
 ) => {
-  const app = express();
+  const app: Application = express();
   app.listen(port);
   const httpServer = http.createServer(app);
   const socketConfig: IsocketConfig = {
@@ -44,7 +44,6 @@ describe('Websocket', () => {
   beforeEach(() => {
     instance = new EasyChat(httpsServer, roomStatusInterval, socketConfig);
   });
-
 
   it('its real instance of AuthController', () => {
     expect(instance).toBeInstanceOf(EasyChat);

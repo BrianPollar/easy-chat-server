@@ -30,11 +30,11 @@ describe('EasyChat end to end', () => {
   });
 
   it('#easyChatClientInstance must be an intsance of EasyChatClient', () => {
-    expect(easyChatInstance).toBeInstanceOf(EasyChatClient);
+    expect(easyChatClientInstance).toBeInstanceOf(EasyChatClient);
   });
 
   it('#easyChatControllerInstance must be an intsance of EasyChatController', () => {
-    expect(easyChatInstance).toBeInstanceOf(EasyChatController);
+    expect(easyChatControllerInstance).toBeInstanceOf(EasyChatController);
   });
 
   it('EasyChatClient should have mode undefined', () => {

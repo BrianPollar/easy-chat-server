@@ -6,16 +6,21 @@ import { faker } from '@faker-js/faker';
 import Onlineroom from '../../../src/defines/online-room.define';
 
 const socketMock = {
-
-} as Socket;
+  handshake: {
+    address: 'svava'
+  },
+  on: vi.fn(),
+  leave: vi.fn(),
+  disconnect: vi.fn(),
+  join: vi.fn()
+} as unknown as Socket;
 
 const roomMock = {
-
-} as Onlineroom;
+  setupSocketHandler: vi.fn()
+} as unknown as Onlineroom;
 
 describe('Onlinepeer', () => {
   let instance: Onlinepeer;
-  let serverSocket: Socket;
   const callBacFn = (...args) => {
 
   };
@@ -30,10 +35,6 @@ describe('Onlinepeer', () => {
 
   it('should be a real instance Onlinepeer', () => {
     expect(instance).toBeInstanceOf(Onlinepeer);
-  });
-
-  it('should have properties undefined', () => {
-    expect(serverSocket).toBeDefined();
   });
 
   it('should have properties defined', () => {
@@ -66,9 +67,9 @@ describe('Onlinepeer', () => {
 
   it('#handlePeerReconnect should handle peer reconnect', () => {
     // @ts-ignore
-    const handlePeerSpy = vi.spyOn(instance, 'timeoutCallback');
+    const handlePeerSpy = vi.spyOn(instance, 'handlePeer');
     // @ts-ignore
-    instance.handlePeerReconnect();
+    instance.handlePeerReconnect(socketMock);
     expect(handlePeerSpy).toHaveBeenCalled();
   });
 
