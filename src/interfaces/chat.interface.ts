@@ -87,7 +87,7 @@ export interface IchatRoom {
   /**
    * Any additional properties of the chat room.
    */
-  extras?: any;
+  extras?;
 
   /**
    * Whether the chat room is closed.

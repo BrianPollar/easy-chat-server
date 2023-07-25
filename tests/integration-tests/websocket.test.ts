@@ -30,6 +30,7 @@ export const constructSocketServer = (
     allowUpgrades: false
   };
   const easyChat = new EasyChat(httpServer, roomStatusInterval, socketConfig);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const url = 'http://localhost/' + (httpServer.address() as any).port;
   const { easyChatClient, easyChatController } = constructClient(url, faker.string.uuid(), faker.internet.userName(), faker.image.avatar());
   return { easyChat, app, httpServer, easyChatClient, easyChatController };

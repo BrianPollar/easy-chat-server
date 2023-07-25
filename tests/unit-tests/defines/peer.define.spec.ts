@@ -21,9 +21,9 @@ const roomMock = {
 
 describe('Onlinepeer', () => {
   let instance: Onlinepeer;
-  const callBacFn = (...args) => {
+  /* const callBacFn = (...args) => {
 
-  };
+  };*/
 
   beforeEach(() => {
     instance = new Onlinepeer(
@@ -37,10 +37,12 @@ describe('Onlinepeer', () => {
     expect(instance).toBeInstanceOf(Onlinepeer);
   });
 
-  it('should have properties defined', () => {
+  it('should have properties as expected', () => {
     expect(instance.joined).toBeDefined();
+    expect(instance.address).toBeDefined();
     expect(instance.closed).toBeDefined();
     expect(instance.disconnectCheck).toBeDefined();
+    expect(instance.intervalHandler).toBeUndefined();
     expect(instance.enterTime).toBeDefined();
     expect(instance.lastSeen).toBeDefined();
     expect(instance.id).toBeDefined();

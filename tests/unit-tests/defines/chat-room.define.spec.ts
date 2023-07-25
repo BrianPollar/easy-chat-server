@@ -12,8 +12,9 @@ const socketMock = {
 } as Socket;
 
 describe('Chatroom', () => {
-  let callbackArgs: any[];
-  let callbackEventArgs: any[];
+  // const timeoutTick = 5000;
+  let callbackArgs: string | symbol[];
+  let callbackEventArgs: string | symbol[];
   const callBacFn = (...args) => {
     callbackArgs = args;
   };
@@ -32,16 +33,33 @@ describe('Chatroom', () => {
     expect(instance).toBeInstanceOf(Chatroom);
   });
 
-  it('#create static should create an instance of Chatroom', () => {
+  it('should have props as expeccted', () => {
+    // @ts-ignore
+    expect(instance.bornTime).toBeDefined();
+    // @ts-ignore
+    expect(instance.reqString).toBeDefined();
+    // @ts-ignore
+    expect(instance.notifString).toBeDefined();
+    // @ts-ignore
+    expect(typeof instance.bornTime).toBe('object');
+    // @ts-ignore
+    expect(instance.reqString).toBe('mainrequest');
+    // @ts-ignore
+    expect(instance.notifString).toBe('mainnotification');
+  });
+
+  it('#create static should create an instance of Chatroom', () => new Promise(done => {
     const roomId = faker.string.uuid();
     const userId = faker.string.uuid();
-    let localcallBacArgs: any[];
+    let localcallBacArgs: string | symbol[];
     const callBacFn = (...args) => {
       localcallBacArgs = args;
+      expect(localcallBacArgs).toBeDefined();
+      done(null);
     };
     const room = Chatroom.create(roomId, userId, callBacFn);
     expect(room).toBeInstanceOf(Chatroom);
-  });
+  }));
 
   it('#nowhandleSocketRequest should make JOIN room request', async() => {
     const request = {
@@ -173,7 +191,7 @@ describe('Chatroom', () => {
       method: ECHATMETHOD.PEER_UPDATE,
       data: {
         to: 'all',
-        peerInfo: null // TODO
+        peerInfo: createMockPeerinfo()
       }
     };
     const peer = createMockPeer(socketMock, instance);

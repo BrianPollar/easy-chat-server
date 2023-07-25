@@ -194,5 +194,6 @@ export default abstract class RoomBase
     peer: Onlinepeer,
     request,
     cb
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any>;
 }

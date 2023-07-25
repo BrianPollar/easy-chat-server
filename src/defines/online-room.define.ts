@@ -5,7 +5,7 @@ import Onlinepeer from './peer.define';
 import RoomBase from './room-base.define';
 import { faker } from '@faker-js/faker';
 
-const logger = getLogger('ChatroomController');
+export const onlineRoomLogger = getLogger('ChatroomController');
 
 export const createMockOnlineroom = (roomStatusInterval: number) => {
   return new Onlineroom(faker.string.uuid(), roomStatusInterval);
@@ -25,7 +25,7 @@ export default class Onlineroom
     private roomStatusInterval: number
   ) {
     super(id);
-    logger.info('Onlineroom:constructor() [roomId:"%s"]', id);
+    onlineRoomLogger.info('Onlineroom:constructor() [roomId:"%s"]', id);
 
     setInterval(() => {
       let all = 0;
@@ -38,12 +38,12 @@ export default class Onlineroom
         }
 
         room.checkDeserted();// check if empty room
-        logger.debug(
+        onlineRoomLogger.debug(
           JSON.stringify(
             room.statusReport()));
       });
 
-      logger.info(
+      onlineRoomLogger.info(
         'chatroom total: %s, closed: %s',
         all,
         closed
@@ -52,7 +52,7 @@ export default class Onlineroom
   }
 
   static create(roomId: string, roomStatusInterval: number) {
-    logger.info('Onlineroom:create() [roomId:"%s"]', roomId);
+    onlineRoomLogger.info('Onlineroom:create() [roomId:"%s"]', roomId);
     return new Onlineroom(
       roomId,
       roomStatusInterval);
@@ -96,7 +96,7 @@ export default class Onlineroom
           true
         );
 
-        logger.debug(
+        onlineRoomLogger.debug(
           'Onlineroom:nowhandleSocketRequest:: - peer joined [peer: "%s"]',
           peer.id);
 
@@ -106,7 +106,7 @@ export default class Onlineroom
 
       case ECHATMETHOD.CLOSE_PEER:
       {
-        logger.info('Onlineroom:nowhandleSocketRequest:: - CLOSE_PEER, main peer: %s', peer.id);
+        onlineRoomLogger.info('Onlineroom:nowhandleSocketRequest:: - CLOSE_PEER, main peer: %s', peer.id);
         peer.close();
         res.msg = 'SUCCESS';
         cb();
@@ -120,7 +120,7 @@ export default class Onlineroom
           .get(roomId as string);
 
         if (!room) {
-          logger.info(
+          onlineRoomLogger.info(
             'Onlineroom:nowhandleSocketRequest:: - creating a new ChatroomController [roomId:"%s"]',
             roomId
           );
@@ -144,14 +144,14 @@ export default class Onlineroom
             room
           );
           room.handlePeer(peer);
-          logger.info(
+          onlineRoomLogger.info(
             'Onlineroom:nowhandleSocketRequest:: - new peer, %s, %s',
             userId,
             peer.socket.id
           );
         } else {
           newPeer.handlePeerReconnect(peer.socket);
-          logger.info(
+          onlineRoomLogger.info(
             'Onlineroom:nowhandleSocketRequest:: - peer reconnect, %s, %s',
             userId,
             peer.socket.id

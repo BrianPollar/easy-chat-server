@@ -6,6 +6,7 @@ import RoomBase from '../../../src/defines/room-base.define';
 import Onlinepeer, { createMockPeer } from '../../../src/defines/peer.define';
 import { ECHATMETHOD } from '../../../src/easy-chat';
 import { Socket } from 'socket.io';
+import Chatroom from '../../../src/defines/chat-room.define';
 
 class BaseTesterBase extends RoomBase {
   nowhandleSocketRequest(
@@ -15,6 +16,7 @@ class BaseTesterBase extends RoomBase {
     request,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     cb
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<any> {
     return Promise.resolve(null);
   }
@@ -48,9 +50,9 @@ const peerMock = {
 describe('RoomBase', () => {
   let instance: BaseTesterBase;
   const id = faker.string.uuid();
-  const callBacFn = (...args) => {
+  /* const callBacFn = (...args) => {
 
-  };
+  };*/
 
   beforeEach(() => {
     instance = new BaseTesterBase(id);
@@ -76,15 +78,15 @@ describe('RoomBase', () => {
 
   it('#setupSocketHandler should set up socket handler', () => {
     // eslint-disable-next-line no-undefined
-    const onSpy = vi.spyOn(peerMock.socket, 'on').mockImplementationOnce(() => undefined);
+    const onSpy = vi.spyOn(peerMock.socket, 'on');// .mockImplementationOnce(() => undefined);
     instance.setupSocketHandler(peerMock);
     expect(onSpy).toHaveBeenCalled();
   });
 
   it('#handlePeer should handle peer connection', () => {
-    const joinSpy = vi.spyOn(peerMock.socket, 'join').mockImplementationOnce(() => undefined);
+    const joinSpy = vi.spyOn(peerMock.socket, 'join');// .mockImplementationOnce(() => undefined);
     const setupSocketHandlerSpy = vi.spyOn(instance, 'setupSocketHandler').mockImplementationOnce(() => undefined);
-    const onSpy = vi.spyOn(peerMock, 'on').mockImplementationOnce(() => undefined);
+    const onSpy = vi.spyOn(peerMock, 'on');// .mockImplementationOnce(() => undefined);
     instance.handlePeer(peerMock);
     expect(joinSpy).toHaveBeenCalled();
     expect(setupSocketHandlerSpy).toHaveBeenCalled();
@@ -92,7 +94,7 @@ describe('RoomBase', () => {
   });
 
   it('#getPeer should get peer provided peer id', () => {
-    const valPeer = createMockPeer(socketMock, instance as any);
+    const valPeer = createMockPeer(socketMock, instance as unknown as Chatroom);
     instance.peers.set(valPeer.id, valPeer);
     const peer = instance.getPeer(valPeer.id);
     expect(peer).toBeInstanceOf(Onlinepeer);
@@ -102,9 +104,10 @@ describe('RoomBase', () => {
   it('#close should close a room', () => {
     const closeSpy = vi.spyOn(instance, 'close').mockImplementationOnce(() => undefined);
     // const emitSpy = vi.spyOn(instance, 'emit').mockImplementationOnce(() => undefined);
-    const valPeer = createMockPeer(socketMock, instance as any);
+    const valPeer = createMockPeer(socketMock, instance as unknown as Chatroom);
     instance.peers.set(valPeer.id, valPeer);
-    const peer = instance.getPeer(valPeer.id);
+    // const peer =
+    instance.getPeer(valPeer.id);
     instance.close();
     // @ts-ignore
     expect(closeSpy).toHaveBeenCalled();
@@ -115,8 +118,8 @@ describe('RoomBase', () => {
     // @ts-ignore
     const checkEmptySpy = vi.spyOn(instance, 'checkEmpty');
     const closeSpy = vi.spyOn(instance, 'close');
-    instance.close();
-    // expect(checkEmptySpy).toHaveBeenCalled();
+    instance.checkDeserted();
+    expect(checkEmptySpy).toHaveBeenCalled();
     expect(closeSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -137,18 +140,24 @@ describe('RoomBase', () => {
     expect(nownotificationSpy).toBeDefined();
   });
 
-  it('#nownotification should broadcast notifications effectively to one peer', () => {
-    // const toSpy = vi.spyOn(socketMock.broadcast, 'to');
+  it('should emit the notification to the socket when broadcast is false', () => {
+    const emitSpy = vi.spyOn(socketMock, 'emit');
+    const method = 'notificationMethod';
+    const data = { message: 'Hello, world!' };
     // @ts-ignore
-    // instance.nownotification(socketMock, ECHATMETHOD.CHAT_MESSAGE, { data: {} }, true);
-    // expect(toSpy).toHaveBeenCalled();
+    instance.nownotification(socketMock, method, data);
+    expect(emitSpy).toHaveBeenCalledWith('notifString', { method, data });
   });
 
-  it('#nownotification should broadcast notifications effectively to all peers', () => {
+  it('should broadcast the notification to all sockets in the room when broadcast is true', () => {
+    const broadcastToSpy = vi.spyOn(socketMock.broadcast, 'to');
     const emitSpy = vi.spyOn(socketMock, 'emit');
+    const method = 'notificationMethod';
+    const data = { message: 'Hello, world!' };
     // @ts-ignore
-    instance.nownotification(socketMock, ECHATMETHOD.CHAT_MESSAGE);
-    expect(emitSpy).toHaveBeenCalled();
+    instance.nownotification(socketMock, method, data, true);
+    expect(broadcastToSpy).toHaveBeenCalledWith(socketMock.id);
+    expect(emitSpy).toHaveBeenCalledWith('notifString', { method, data });
   });
 
   it('#setActive should set date for room to current date', () => {
@@ -161,6 +170,23 @@ describe('RoomBase', () => {
     // @ts-ignore
     const isEmpty = instance.checkEmpty();
     expect(typeof isEmpty).toBe('boolean');
+  });
+
+  it('#checkEmpty should return run true if peers are empty', () => {
+    instance.peers.clear();
+    // @ts-ignore
+    const isEmpty = instance.checkEmpty();
+    expect(typeof isEmpty).toBe('boolean');
+    expect(isEmpty).toBe(true);
+  });
+
+  it('#checkEmpty should return true if peers sre not empty', () => {
+    const peer = createMockPeer(socketMock, instance as unknown as Chatroom);
+    instance.peers.set('peer.id', peer);
+    // @ts-ignore
+    const isEmpty = instance.checkEmpty();
+    expect(typeof isEmpty).toBe('boolean');
+    expect(isEmpty).toBe(false);
   });
 
   it('#nowhandleSocketRequest should return null for mock method', async() => {
