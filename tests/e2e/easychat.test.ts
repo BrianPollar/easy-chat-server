@@ -22,7 +22,7 @@ describe('EasyChat end to end', () => {
 
   afterAll(() => {
     // easyChatInstance.io.close();
-    easyChatClientInstance.disconectSocket();
+    // easyChatClientInstance.disconectSocket();
   });
 
   it('#easyChatInstance must be an intsance of EasyChat', () => {
