@@ -1,3 +1,6 @@
+/**
+ * This file exports all of the types and interfaces used in the chat application.
+ */
 export * from './websocket';
 export * from './interfaces/chat.interface';
 export * from './interfaces/socket.interface';

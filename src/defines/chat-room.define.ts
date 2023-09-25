@@ -5,7 +5,6 @@ import { ECHATMETHOD } from '../enums/chat.enum';
 import { IchatMsg } from '../interfaces/chat.interface';
 import Onlinepeer from './peer.define';
 import RoomBase from './room-base.define';
-import { faker } from '@faker-js/faker';
 
 export interface InowhandleSocketRequestRes {
   // Indicates whether the request was successful.
@@ -17,25 +16,6 @@ export interface InowhandleSocketRequestRes {
   // The message to be sent to the client.
   msg: string;
 }
-
-
-// Creates a mock chatroom.
-//
-// The `cb` callback function is called when the chatroom is created.
-export const createMockChatroom = (cb) => {
-  // Creates a new chatroom with a random UUID and username.
-  return new Chatroom(faker.string.uuid(), faker.internet.userName(), cb);
-};
-
-// Creates a mock chatrooms.
-//
-// The `length` parameter specifies the number of chatrooms to create.
-//
-// The `cb` callback function is called when each chatroom is created.
-export const createMockChatrooms = (length: number, cb) => {
-  // Creates an array of `length` chatrooms.
-  return Array.from({ length }).map(() => createMockChatroom(cb));
-};
 
 const logger = getLogger('Chatroom');
 
