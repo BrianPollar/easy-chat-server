@@ -4,9 +4,6 @@ import { Socket } from 'socket.io';
 import Onlinepeer from './peer.define';
 import Chatroom from './chat-room.define';
 import { ECHATMETHOD } from '../enums/chat.enum';
-export declare const createMockRoomBase: () => {
-    id: string;
-};
 /**
  * This class is the base class for all chat rooms.
  */

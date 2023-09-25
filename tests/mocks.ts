@@ -17,3 +17,30 @@ export const createMockChatrooms = (length: number, cb) => {
   // Creates an array of `length` chatrooms.
   return Array.from({ length }).map(() => createMockChatroom(cb));
 };
+
+
+export const createMockOnlineroom = (roomStatusInterval: number) => {
+  return new Onlineroom(faker.string.uuid(), roomStatusInterval);
+};
+
+export const createMockOnlinerooms = (length: number, roomStatusInterval: number) => {
+  return Array.from({ length }).map(() => createMockOnlineroom(roomStatusInterval));
+};
+
+export const createMockRoomBase = () => {
+  return {
+    id: faker.string.uuid()
+  };
+};
+
+export const createMockPeer = (socket: Socket, room: Chatroom | Onlineroom) => {
+  return new Onlinepeer(
+    faker.string.uuid(),
+    socket,
+    room
+  );
+};
+
+export const createMockPeers = (length: number, socket: Socket, room: Chatroom | Onlineroom) => {
+  return Array.from({ length }).map(() => createMockPeer(socket, room));
+};

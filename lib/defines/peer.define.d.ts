@@ -3,8 +3,6 @@ import { Socket } from 'socket.io';
 import { EventEmitter } from 'events';
 import Chatroom from './chat-room.define';
 import Onlineroom from './online-room.define';
-export declare const createMockPeer: (socket: Socket, room: Chatroom | Onlineroom) => Onlinepeer;
-export declare const createMockPeers: (length: number, socket: Socket, room: Chatroom | Onlineroom) => Onlinepeer[];
 export default class Onlinepeer extends EventEmitter {
     id: string;
     socket: Socket;
